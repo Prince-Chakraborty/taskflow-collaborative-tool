@@ -1,3 +1,7 @@
+const { pool } = require('../config/db');
+beforeAll(() => { jest.spyOn(console, 'error').mockImplementation(() => {}); jest.spyOn(console, 'log').mockImplementation(() => {}); });
+afterAll(async () => { console.error.mockRestore(); console.log.mockRestore(); await pool.end(); });
+
 const request = require('supertest');
 const app = require('../app');
 
