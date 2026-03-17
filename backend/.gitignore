@@ -30,3 +30,4 @@ uploads/
 
 # Coverage
 coverage/
+logs/*.log

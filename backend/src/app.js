@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('./utils/logger');
 const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
 const cors = require('cors');
@@ -82,7 +83,7 @@ app.use((req, res) => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error('❌ Error:', err.stack);
+  logger.error(err.stack || err.message);
 
   // Friendly error messages
   const friendlyMessages = {
