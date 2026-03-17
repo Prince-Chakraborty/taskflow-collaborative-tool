@@ -8,6 +8,7 @@ import { cn, getPriorityColor, formatDate, isOverdue } from '@/lib/utils';
 import Avatar from '@/components/common/Avatar';
 import Loading from '@/components/common/Loading';
 import CardChecklist from './CardChecklist';
+import CardSubtasks from './CardSubtasks';
 import CardComments from './CardComments';
 import CardAttachments from './CardAttachments';
 import useBoardStore from '@/store/boardStore';
@@ -33,7 +34,7 @@ const CardModal = ({ cardId, boardId, isOpen, onClose }: CardModalProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [users, setUsers] = useState<UserType[]>([]);
-  const [activeTab, setActiveTab] = useState<'details' | 'checklist' | 'comments' | 'attachments'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'subtasks' | 'checklist' | 'comments' | 'attachments'>('details');
 
   useEffect(() => {
     if (isOpen && cardId) {
@@ -199,7 +200,7 @@ const CardModal = ({ cardId, boardId, isOpen, onClose }: CardModalProps) => {
               <div className="flex-1 p-5">
                 {/* Tabs */}
                 <div className="flex gap-1 mb-4 bg-gray-100 rounded-xl p-1">
-                  {(['details', 'checklist', 'comments', 'attachments'] as const).map((tab) => (
+                  {(['details', 'subtasks', 'checklist', 'comments', 'attachments'] as const).map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
@@ -261,6 +262,11 @@ const CardModal = ({ cardId, boardId, isOpen, onClose }: CardModalProps) => {
                       </div>
                     )}
                   </div>
+                )}
+
+                {/* Subtasks Tab */}
+                {activeTab === 'subtasks' && card && (
+                  <CardSubtasks cardId={card.id} />
                 )}
 
                 {/* Checklist Tab */}

@@ -35,4 +35,10 @@ router.post('/:cardId/checklists', addChecklist);
 router.put('/:cardId/checklists/:checklistId', updateChecklist);
 router.delete('/:cardId/checklists/:checklistId', deleteChecklist);
 
+// Subtask routes
+router.get('/:cardId/subtasks', protect, getSubtasks);
+router.post('/:cardId/subtasks', protect, addSubtask);
+router.put('/subtasks/:subtaskId/toggle', protect, toggleSubtask);
+router.delete('/subtasks/:subtaskId', protect, deleteSubtask);
+
 module.exports = router;

@@ -440,10 +440,76 @@ const searchCards = async (req, res, next) => {
   }
 };
 
+
+// @desc    Get subtasks for a card
+const getSubtasks = async (req, res, next) => {
+  try {
+    const { cardId } = req.params;
+    const result = await query(
+      'SELECT * FROM subtasks WHERE card_id = $1 ORDER BY position ASC',
+      [cardId]
+    );
+    return successResponse(res, 200, 'Subtasks fetched', result.rows);
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+// @desc    Add subtask to card
+const addSubtask = async (req, res, next) => {
+  try {
+    const { cardId } = req.params;
+    const { title } = req.body;
+    const userId = req.user.id;
+    if (!title?.trim()) return next(new AppError('Title is required', 400));
+    const posResult = await query(
+      'SELECT COUNT(*) FROM subtasks WHERE card_id = $1',
+      [cardId]
+    );
+    const position = parseInt(posResult.rows[0].count);
+    const result = await query(
+      'INSERT INTO subtasks (card_id, title, position, created_by) VALUES ($1, $2, $3, $4) RETURNING *',
+      [cardId, title.trim(), position, userId]
+    );
+    return successResponse(res, 201, 'Subtask added', result.rows[0]);
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+// @desc    Toggle subtask completion
+const toggleSubtask = async (req, res, next) => {
+  try {
+    const { subtaskId } = req.params;
+    const result = await query(
+      'UPDATE subtasks SET is_completed = NOT is_completed, updated_at = NOW() WHERE id = $1 RETURNING *',
+      [subtaskId]
+    );
+    return successResponse(res, 200, 'Subtask updated', result.rows[0]);
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+// @desc    Delete subtask
+const deleteSubtask = async (req, res, next) => {
+  try {
+    const { subtaskId } = req.params;
+    await query('DELETE FROM subtasks WHERE id = $1', [subtaskId]);
+    return successResponse(res, 200, 'Subtask deleted', {});
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
 module.exports = {
   createCard,
   getCard,
   updateCard,
+  getSubtasks,
+  addSubtask,
+  toggleSubtask,
+  deleteSubtask,
   moveCard,
   deleteCard,
   addComment,
