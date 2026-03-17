@@ -13,6 +13,7 @@ import Avatar from '@/components/common/Avatar';
 import OnlineUsers from '@/components/board/OnlineUsers';
 import useAuth from '@/hooks/useAuth';
 import useBoardStore from '@/store/boardStore';
+import useBoardStore from '@/store/boardStore';
 import useSocket from '@/hooks/useSocket';
 import { timeAgo } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -27,6 +28,13 @@ export default function BoardPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const { lists } = useBoardStore();
+  const overdueCount = lists.reduce((acc, list) => {
+    return acc + (list.cards?.filter(c => {
+      if (!c.due_date) return false;
+      return new Date(c.due_date) < new Date() && list.name !== 'Done';
+    }).length || 0);
+  }, 0);
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
 
   useSocket(boardId as string);
@@ -192,6 +200,16 @@ export default function BoardPage() {
             </button>
           </div>
         </div>
+
+        {/* Overdue Banner */}
+        {overdueCount > 0 && (
+          <div className="mx-4 mt-2 px-4 py-2.5 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2 flex-shrink-0">
+            <span className="text-red-500">⚠️</span>
+            <p className="text-sm text-red-700 font-medium">
+              {overdueCount} overdue {overdueCount === 1 ? 'card' : 'cards'} — please review and update deadlines
+            </p>
+          </div>
+        )}
 
         {/* Search Results */}
         {searchResults.length > 0 && (
