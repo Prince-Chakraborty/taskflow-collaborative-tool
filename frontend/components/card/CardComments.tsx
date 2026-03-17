@@ -80,7 +80,7 @@ const CardComments = ({ cardId, boardId, comments, onUpdate }: CardCommentsProps
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Write a comment... (Ctrl+Enter to submit)"
+              placeholder="Write a comment... Use @name to mention someone (Ctrl+Enter to submit)"
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 resize-none text-gray-800 placeholder-gray-400"
               rows={2}
             />
@@ -129,7 +129,13 @@ const CardComments = ({ cardId, boardId, comments, onUpdate }: CardCommentsProps
                     </div>
                   </div>
                   <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                    {comment.content}
+                    {comment.content.split(/(@\w+)/g).map((part, i) =>
+                      part.startsWith('@') ? (
+                        <span key={i} className="text-blue-600 font-semibold bg-blue-50 px-1 rounded">
+                          {part}
+                        </span>
+                      ) : part
+                    )}
                   </p>
                 </div>
               </div>
