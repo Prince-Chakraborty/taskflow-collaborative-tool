@@ -27,6 +27,7 @@ export default function BoardPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
 
   useSocket(boardId as string);
 
@@ -127,6 +128,19 @@ export default function BoardPage() {
             <h1 className="text-white font-semibold text-base">{board?.name}</h1>
           </div>
 
+          {/* Assignee Filter */}
+          <div className="hidden sm:flex items-center gap-1.5">
+            <select
+              value={assigneeFilter}
+              onChange={(e) => setAssigneeFilter(e.target.value)}
+              className="bg-gray-700 text-gray-300 text-xs rounded-lg px-2 py-1 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Members</option>
+              <option value="unassigned">Unassigned</option>
+              <option value="me">Assigned to Me</option>
+            </select>
+          </div>
+
           {/* Priority Filter */}
           <div className="hidden sm:flex items-center gap-1.5">
             {['all', 'urgent', 'high', 'medium', 'low'].map((p) => (
@@ -201,7 +215,7 @@ export default function BoardPage() {
         {/* Board Canvas + Activity */}
         <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 overflow-x-auto overflow-y-auto bg-slate-100 p-4 min-h-0">
-            {board && <Board boardId={boardId as string} priorityFilter={priorityFilter} />}
+            {board && <Board boardId={boardId as string} priorityFilter={priorityFilter} assigneeFilter={assigneeFilter} />}
           </div>
 
           {showActivity && (

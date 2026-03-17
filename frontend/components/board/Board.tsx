@@ -12,9 +12,10 @@ import toast from 'react-hot-toast';
 interface BoardProps {
   boardId: string;
   priorityFilter?: string;
+  assigneeFilter?: string;
 }
 
-const Board = ({ boardId, priorityFilter = 'all' }: BoardProps) => {
+const Board = ({ boardId, priorityFilter = 'all', assigneeFilter = 'all' }: BoardProps) => {
   const { lists, moveCard } = useBoardStore();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -60,10 +61,16 @@ const Board = ({ boardId, priorityFilter = 'all' }: BoardProps) => {
     <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
       <div className="flex gap-4 items-start pb-4 min-w-max">
         {lists.map((list) => {
-          const filteredList = priorityFilter === 'all' ? list : {
-            ...list,
-            cards: list.cards?.filter(c => c.priority === priorityFilter) || []
-          };
+          let filteredCards = list.cards || [];
+          if (priorityFilter !== 'all') {
+            filteredCards = filteredCards.filter(c => c.priority === priorityFilter);
+          }
+          if (assigneeFilter === 'unassigned') {
+            filteredCards = filteredCards.filter(c => !c.assigned_to);
+          } else if (assigneeFilter === 'me') {
+            filteredCards = filteredCards.filter(c => c.assigned_to);
+          }
+          const filteredList = { ...list, cards: filteredCards };
           return (
           <BoardList
             key={list.id}
