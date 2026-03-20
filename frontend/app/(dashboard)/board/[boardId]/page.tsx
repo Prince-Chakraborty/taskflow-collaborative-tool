@@ -13,7 +13,6 @@ import Avatar from '@/components/common/Avatar';
 import OnlineUsers from '@/components/board/OnlineUsers';
 import useAuth from '@/hooks/useAuth';
 import useBoardStore from '@/store/boardStore';
-import useBoardStore from '@/store/boardStore';
 import useSocket from '@/hooks/useSocket';
 import { timeAgo } from '@/lib/utils';
 import toast from 'react-hot-toast';

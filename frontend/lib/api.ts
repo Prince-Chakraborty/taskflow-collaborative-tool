@@ -143,6 +143,10 @@ export const cardAPI = {
     api.put(`/cards/${cardId}/checklists/${checklistId}`, data),
   deleteChecklist: (cardId: string, checklistId: string) =>
     api.delete(`/cards/${cardId}/checklists/${checklistId}`),
+  getSubtasks: (cardId: string) => api.get(`/cards/${cardId}/subtasks`),
+  addSubtask: (cardId: string, data: any) => api.post(`/cards/${cardId}/subtasks`, data),
+  toggleSubtask: (subtaskId: string) => api.put(`/cards/subtasks/${subtaskId}/toggle`, {}),
+  deleteSubtask: (subtaskId: string) => api.delete(`/cards/subtasks/${subtaskId}`),
 };
 
 // User APIs
