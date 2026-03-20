@@ -11,7 +11,11 @@ const {
   addChecklist,
   updateChecklist,
   deleteChecklist,
-  searchCards
+  searchCards,
+  getSubtasks,
+  addSubtask,
+  toggleSubtask,
+  deleteSubtask
 } = require('../controllers/card.controller');
 const { protect } = require('../middleware/auth.middleware');
 
