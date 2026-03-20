@@ -13,9 +13,10 @@ interface BoardProps {
   boardId: string;
   priorityFilter?: string;
   assigneeFilter?: string;
+  dueDateFilter?: string;
 }
 
-const Board = ({ boardId, priorityFilter = 'all', assigneeFilter = 'all' }: BoardProps) => {
+const Board = ({ boardId, priorityFilter = 'all', assigneeFilter = 'all', dueDateFilter = 'all' }: BoardProps) => {
   const { lists, moveCard } = useBoardStore();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -69,6 +70,16 @@ const Board = ({ boardId, priorityFilter = 'all', assigneeFilter = 'all' }: Boar
             filteredCards = filteredCards.filter(c => !c.assigned_to);
           } else if (assigneeFilter === 'me') {
             filteredCards = filteredCards.filter(c => c.assigned_to);
+          }
+          if (dueDateFilter === 'overdue') {
+            filteredCards = filteredCards.filter(c => c.due_date && new Date(c.due_date) < new Date());
+          } else if (dueDateFilter === 'today') {
+            const today = new Date().toDateString();
+            filteredCards = filteredCards.filter(c => c.due_date && new Date(c.due_date).toDateString() === today);
+          } else if (dueDateFilter === 'week') {
+            const weekFromNow = new Date();
+            weekFromNow.setDate(weekFromNow.getDate() + 7);
+            filteredCards = filteredCards.filter(c => c.due_date && new Date(c.due_date) <= weekFromNow);
           }
           const filteredList = { ...list, cards: filteredCards };
           return (

@@ -12,6 +12,7 @@ import Loading from '@/components/common/Loading';
 import Avatar from '@/components/common/Avatar';
 import OnlineUsers from '@/components/board/OnlineUsers';
 import useAuth from '@/hooks/useAuth';
+import useNotificationStore from '@/store/notificationStore';
 import useBoardStore from '@/store/boardStore';
 import useSocket from '@/hooks/useSocket';
 import { timeAgo } from '@/lib/utils';
@@ -22,6 +23,7 @@ export default function BoardPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { board, setBoard, isLoading } = useBoardStore();
+  const { addNotification } = useNotificationStore();
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [showActivity, setShowActivity] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,6 +37,7 @@ export default function BoardPage() {
     }).length || 0);
   }, 0);
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
+  const [dueDateFilter, setDueDateFilter] = useState<string>('all');
 
   useSocket(boardId as string);
 
@@ -60,6 +63,16 @@ export default function BoardPage() {
   useEffect(() => {
     if (isAuthenticated && boardId) fetchBoard();
   }, [isAuthenticated, boardId]);
+
+  // Send overdue notifications when board loads
+  useEffect(() => {
+    if (overdueCount > 0) {
+      addNotification({
+        message: `⚠️ ${overdueCount} overdue ${overdueCount === 1 ? 'card' : 'cards'} need attention`,
+        type: 'warning',
+      });
+    }
+  }, [overdueCount]);
 
   const fetchBoard = async () => {
     try {
@@ -148,6 +161,20 @@ export default function BoardPage() {
             </select>
           </div>
 
+          {/* Due Date Filter */}
+          <div className="hidden sm:flex items-center gap-1.5">
+            <select
+              value={dueDateFilter}
+              onChange={(e) => setDueDateFilter(e.target.value)}
+              className="bg-gray-700 text-gray-300 text-xs rounded-lg px-2 py-1 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Dates</option>
+              <option value="overdue">Overdue</option>
+              <option value="today">Due Today</option>
+              <option value="week">Due This Week</option>
+            </select>
+          </div>
+
           {/* Priority Filter */}
           <div className="hidden sm:flex items-center gap-1.5">
             {['all', 'urgent', 'high', 'medium', 'low'].map((p) => (
@@ -232,7 +259,7 @@ export default function BoardPage() {
         {/* Board Canvas + Activity */}
         <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 overflow-x-auto overflow-y-auto bg-slate-100 p-4 min-h-0">
-            {board && <Board boardId={boardId as string} priorityFilter={priorityFilter} assigneeFilter={assigneeFilter} />}
+            {board && <Board boardId={boardId as string} priorityFilter={priorityFilter} assigneeFilter={assigneeFilter} dueDateFilter={dueDateFilter} />}
           </div>
 
           {showActivity && (
