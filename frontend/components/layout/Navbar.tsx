@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Bell, Search, ChevronDown, LogOut, User, Settings, Check, Trash2, Sun, Moon } from 'lucide-react';
@@ -20,6 +20,8 @@ const Navbar = () => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
   };
@@ -60,7 +62,7 @@ const Navbar = () => {
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors flex items-center justify-center w-9 h-9"
         >
-          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          {mounted ? (theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />) : <Moon size={18} />}
         </button>
 
         {/* Notifications */}
