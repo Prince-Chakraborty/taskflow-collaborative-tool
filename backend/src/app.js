@@ -15,6 +15,7 @@ const userRoutes = require('./routes/user.routes');
 const uploadRoutes = require('./routes/upload.routes');
 
 const app = express();
+app.set('trust proxy', 1); // Trust Render's proxy
 
 // Security Middleware
 app.use(helmet());
