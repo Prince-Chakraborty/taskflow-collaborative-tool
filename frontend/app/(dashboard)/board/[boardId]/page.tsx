@@ -98,8 +98,7 @@ export default function BoardPage() {
     if (!showActivity) fetchActivity();
   };
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const doSearch = async () => {
     if (!searchQuery.trim()) { setSearchResults([]); return; }
     try {
       const response = await cardAPI.search({ q: searchQuery, boardId: boardId as string });
@@ -107,6 +106,10 @@ export default function BoardPage() {
     } catch (err) {
       toast.error('Search failed');
     }
+  };
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    doSearch();
   };
 
   const getActivityMessage = (log: ActivityLog) => {
@@ -205,7 +208,7 @@ export default function BoardPage() {
                   placeholder="Search cards..."
                   value={searchQuery}
                   onChange={(e) => { setSearchQuery(e.target.value); if (!e.target.value) setSearchResults([]); }}
-                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearch(e as any); } }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } }}
                   className="bg-gray-800 text-gray-200 placeholder-gray-500 pl-8 pr-3 py-1.5 rounded-lg text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
                 />
               </div>

@@ -33,6 +33,9 @@ export default function DashboardPage() {
     if (typeof window !== "undefined" && window.location.search.includes("createWorkspace=true")) {
       setShowCreateModal(true);
     }
+    const handler = () => setShowCreateModal(true);
+    window.addEventListener("openCreateWorkspace", handler);
+    return () => window.removeEventListener("openCreateWorkspace", handler);
   }, []);
 
   const fetchWorkspaces = async () => {
