@@ -29,6 +29,7 @@ export default function BoardPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const searchTimerRef = useRef<any>(null);
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const { lists } = useBoardStore();
   const overdueCount = lists.reduce((acc, list) => {
@@ -211,12 +212,13 @@ export default function BoardPage() {
                   onChange={(e) => {
                     const val = e.target.value;
                     setSearchQuery(val);
-                    if (!val.trim()) { setSearchResults([]); return; }
+                    if (!val.trim()) { setSearchResults([]); setHasSearched(false); return; }
                     if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
                     searchTimerRef.current = setTimeout(() => {
+                      setHasSearched(true);
                       cardAPI.search({ q: val, boardId: boardId as string })
-                        .then(r => setSearchResults(r.data.data))
-                        .catch(() => toast.error('Search failed'));
+                        .then(r => setSearchResults(r.data.data || []))
+                        .catch(() => { toast.error('Search failed'); setSearchResults([]); });
                     }, 400);
                   }}
                   className="bg-gray-800 text-gray-200 placeholder-gray-500 pl-8 pr-3 py-1.5 rounded-lg text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
@@ -246,14 +248,16 @@ export default function BoardPage() {
         )}
 
         {/* Search Results */}
-        {searchResults.length > 0 && (
+        {(searchResults.length > 0 || hasSearched) && searchQuery.trim() && (
           <div className="mx-4 mt-1 bg-white rounded-xl shadow-2xl p-3 z-50 border border-gray-100">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold text-gray-700">Results ({searchResults.length})</h4>
               <button onClick={() => setSearchResults([])} className="text-xs text-gray-400 hover:text-gray-600">Close</button>
             </div>
             <div className="space-y-1 max-h-48 overflow-y-auto">
-              {searchResults.map((card) => (
+              {searchResults.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-4">No cards found for "{searchQuery}"</p>
+              ) : searchResults.map((card) => (
                 <div key={card.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
                   <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
                   <span className="text-sm text-gray-700">{card.title}</span>
