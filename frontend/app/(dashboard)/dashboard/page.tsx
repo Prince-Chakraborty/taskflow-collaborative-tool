@@ -230,7 +230,7 @@ export default function DashboardPage() {
 
       {/* Create Workspace Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[200] p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Create Workspace</h2>
             <form onSubmit={handleCreateWorkspace} className="space-y-4">
@@ -243,7 +243,7 @@ export default function DashboardPage() {
                   value={newWorkspace.name}
                   onChange={(e) => setNewWorkspace({ ...newWorkspace, name: e.target.value })}
                   placeholder="e.g. My Team, Project Alpha"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white"
                   autoFocus
                 />
               </div>
@@ -255,7 +255,7 @@ export default function DashboardPage() {
                   value={newWorkspace.description}
                   onChange={(e) => setNewWorkspace({ ...newWorkspace, description: e.target.value })}
                   placeholder="What is this workspace for?"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none text-gray-900 bg-white"
                   rows={3}
                 />
               </div>

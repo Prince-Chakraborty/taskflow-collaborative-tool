@@ -177,23 +177,17 @@ export default function BoardPage() {
 
           {/* Priority Filter */}
           <div className="hidden sm:flex items-center gap-1.5">
-            {['all', 'urgent', 'high', 'medium', 'low'].map((p) => (
-              <button
-                key={p}
-                onClick={() => setPriorityFilter(p)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${
-                  priorityFilter === p
-                    ? p === 'urgent' ? 'bg-red-500 text-white'
-                    : p === 'high' ? 'bg-orange-500 text-white'
-                    : p === 'medium' ? 'bg-yellow-500 text-white'
-                    : p === 'low' ? 'bg-green-500 text-white'
-                    : 'bg-blue-500 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-              >
-                {p === 'all' ? '⊞ All' : p}
-              </button>
-            ))}
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className="bg-gray-700 text-gray-300 text-xs rounded-lg px-2 py-1 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Priorities</option>
+              <option value="urgent">Urgent</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
           </div>
 
           <div className="flex items-center gap-3">
