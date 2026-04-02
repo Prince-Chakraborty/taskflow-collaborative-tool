@@ -204,7 +204,7 @@ export default function WorkspacePage() {
                   value={newBoard.name}
                   onChange={(e) => setNewBoard({ ...newBoard, name: e.target.value })}
                   placeholder="e.g. Sprint 1, Marketing Campaign"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white"
                   autoFocus
                 />
               </div>

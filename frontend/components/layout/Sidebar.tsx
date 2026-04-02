@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Plus, ChevronDown, ChevronRight, Briefcase, Settings, Users, X, Menu } from 'lucide-react';
 import { workspaceAPI } from '@/lib/api';
 import { Workspace } from '@/types';
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [expandedWorkspaces, setExpandedWorkspaces] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,7 +76,8 @@ const Sidebar = () => {
             Workspaces
           </span>
           <Link
-            href="/dashboard?createWorkspace=true"
+            href="/dashboard"
+            onClick={(e) => { e.preventDefault(); router.push("/dashboard?createWorkspace=true"); }}
             className="p-1 text-gray-500 hover:text-white hover:bg-gray-800 rounded transition-colors"
           >
             <Plus size={14} />
