@@ -205,6 +205,7 @@ export default function BoardPage() {
                   placeholder="Search cards..."
                   value={searchQuery}
                   onChange={(e) => { setSearchQuery(e.target.value); if (!e.target.value) setSearchResults([]); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearch(e as any); } }}
                   className="bg-gray-800 text-gray-200 placeholder-gray-500 pl-8 pr-3 py-1.5 rounded-lg text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
                 />
               </div>

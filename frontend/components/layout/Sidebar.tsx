@@ -75,13 +75,12 @@ const Sidebar = () => {
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
             Workspaces
           </span>
-          <Link
-            href="/dashboard"
-            onClick={(e) => { e.preventDefault(); router.push("/dashboard?createWorkspace=true"); }}
+          <button
+            onClick={() => router.push("/dashboard?createWorkspace=true")}
             className="p-1 text-gray-500 hover:text-white hover:bg-gray-800 rounded transition-colors"
           >
             <Plus size={14} />
-          </Link>
+          </button>
         </div>
 
         {isLoading ? (
