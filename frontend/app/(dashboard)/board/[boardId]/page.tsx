@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Activity, Search, Filter } from 'lucide-react';
 import { boardAPI, cardAPI } from '@/lib/api';
@@ -27,6 +27,7 @@ export default function BoardPage() {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [showActivity, setShowActivity] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const searchTimerRef = useRef<any>(null);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const { lists } = useBoardStore();
@@ -207,8 +208,17 @@ export default function BoardPage() {
                   type="text"
                   placeholder="Search cards..."
                   value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); if (!e.target.value) setSearchResults([]); }}
-                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } }}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSearchQuery(val);
+                    if (!val.trim()) { setSearchResults([]); return; }
+                    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+                    searchTimerRef.current = setTimeout(() => {
+                      cardAPI.search({ q: val, boardId: boardId as string })
+                        .then(r => setSearchResults(r.data.data))
+                        .catch(() => toast.error('Search failed'));
+                    }, 400);
+                  }}
                   className="bg-gray-800 text-gray-200 placeholder-gray-500 pl-8 pr-3 py-1.5 rounded-lg text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
                 />
               </div>

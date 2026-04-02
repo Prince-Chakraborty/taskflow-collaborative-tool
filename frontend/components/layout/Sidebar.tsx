@@ -5,12 +5,16 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Plus, ChevronDown, ChevronRight, Briefcase, Settings, Users, X, Menu } from 'lucide-react';
 import { workspaceAPI } from '@/lib/api';
+import toast from 'react-hot-toast';
 import { Workspace } from '@/types';
 import { cn } from '@/lib/utils';
 
 const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const [newWS, setNewWS] = useState({ name: "", description: "" });
+  const [creating, setCreating] = useState(false);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [expandedWorkspaces, setExpandedWorkspaces] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +29,21 @@ const Sidebar = () => {
     setIsMobileOpen(false);
   }, [pathname]);
 
+  const handleCreate = async () => {
+    if (!newWS.name.trim()) return;
+    setCreating(true);
+    try {
+      await workspaceAPI.create(newWS);
+      setNewWS({ name: "", description: "" });
+      setShowModal(false);
+      toast.success("Workspace created!");
+      fetchWorkspaces();
+    } catch {
+      toast.error("Failed to create workspace");
+    } finally {
+      setCreating(false);
+    }
+  };
   const fetchWorkspaces = async () => {
     try {
       const response = await workspaceAPI.getAll();
@@ -76,13 +95,7 @@ const Sidebar = () => {
             Workspaces
           </span>
           <button
-            onClick={() => {
-              if (window.location.pathname === "/dashboard") {
-                window.dispatchEvent(new CustomEvent("openCreateWorkspace"));
-              } else {
-                router.push("/dashboard?createWorkspace=true");
-              }
-            }}
+            onClick={() => setShowModal(true)}
             className="p-1 text-gray-500 hover:text-white hover:bg-gray-800 rounded transition-colors"
           >
             <Plus size={14} />
