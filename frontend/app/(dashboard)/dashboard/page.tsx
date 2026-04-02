@@ -9,12 +9,13 @@ import Sidebar from '@/components/layout/Sidebar';
 import Loading from '@/components/common/Loading';
 import { WorkspaceSkeleton } from '@/components/common/Skeleton';
 import useAuth from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -28,6 +29,12 @@ export default function DashboardPage() {
   useEffect(() => {
     if (isAuthenticated) fetchWorkspaces();
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (searchParams.get("createWorkspace") === "true") {
+      setShowCreateModal(true);
+    }
+  }, [searchParams]);
 
   const fetchWorkspaces = async () => {
     try {
