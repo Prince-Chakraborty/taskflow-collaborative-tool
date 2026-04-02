@@ -76,7 +76,13 @@ const Sidebar = () => {
             Workspaces
           </span>
           <button
-            onClick={() => router.push("/dashboard?createWorkspace=true")}
+            onClick={() => {
+              if (window.location.pathname === "/dashboard") {
+                window.dispatchEvent(new CustomEvent("openCreateWorkspace"));
+              } else {
+                router.push("/dashboard?createWorkspace=true");
+              }
+            }}
             className="p-1 text-gray-500 hover:text-white hover:bg-gray-800 rounded transition-colors"
           >
             <Plus size={14} />
