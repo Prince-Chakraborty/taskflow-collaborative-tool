@@ -6,6 +6,7 @@ import BoardList from './BoardList';
 import AddList from './AddList';
 import useBoardStore from '@/store/boardStore';
 import { cardAPI } from '@/lib/api';
+import useNotificationStore from '@/store/notificationStore';
 import { emitCardMoved } from '@/lib/socket';
 import toast from 'react-hot-toast';
 
@@ -18,6 +19,7 @@ interface BoardProps {
 
 const Board = ({ boardId, priorityFilter = 'all', assigneeFilter = 'all', dueDateFilter = 'all' }: BoardProps) => {
   const { lists, moveCard } = useBoardStore();
+  const { addNotification } = useNotificationStore();
   const [isDragging, setIsDragging] = useState(false);
 
   const onDragStart = () => setIsDragging(true);
@@ -41,6 +43,7 @@ const Board = ({ boardId, priorityFilter = 'all', assigneeFilter = 'all', dueDat
     );
 
     try {
+      addNotification({ message: 'Card moved successfully', type: 'info' });
       await cardAPI.move(draggableId, {
         listId: destination.droppableId,
         position: destination.index,

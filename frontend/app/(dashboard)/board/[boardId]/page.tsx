@@ -214,11 +214,14 @@ export default function BoardPage() {
                     setSearchQuery(val);
                     if (!val.trim()) { setSearchResults([]); setHasSearched(false); return; }
                     if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-                    searchTimerRef.current = setTimeout(() => {
+                    searchTimerRef.current = setTimeout(async () => {
                       setHasSearched(true);
-                      cardAPI.search({ q: val, boardId: boardId as string })
-                        .then(r => setSearchResults(r.data.data || []))
-                        .catch(() => { toast.error('Search failed'); setSearchResults([]); });
+                      try {
+                        const r = await cardAPI.search({ q: val, boardId: boardId as string });
+                        setSearchResults(r.data.data || []);
+                      } catch {
+                        setSearchResults([]);
+                      }
                     }, 400);
                   }}
                   className="bg-gray-800 text-gray-200 placeholder-gray-500 pl-8 pr-3 py-1.5 rounded-lg text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"

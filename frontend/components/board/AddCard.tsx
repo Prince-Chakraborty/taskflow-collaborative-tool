@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, Plus } from 'lucide-react';
 import { cardAPI } from '@/lib/api';
+import useNotificationStore from '@/store/notificationStore';
 import useBoardStore from '@/store/boardStore';
 import { emitCardCreated } from '@/lib/socket';
 import toast from 'react-hot-toast';
@@ -15,6 +16,7 @@ interface AddCardProps {
 
 const AddCard = ({ listId, boardId, onClose }: AddCardProps) => {
   const { addCard } = useBoardStore();
+  const { addNotification } = useNotificationStore();
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,6 +38,7 @@ const AddCard = ({ listId, boardId, onClose }: AddCardProps) => {
       emitCardCreated({ boardId, card: newCard });
 
       toast.success('Card created!');
+      addNotification({ message: 'Card created successfully', type: 'success' });
       setTitle('');
       onClose();
     } catch (err) {
