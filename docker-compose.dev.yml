@@ -1,0 +1,6 @@
+version: "3.8"
+# Use this for local development: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+services:
+  postgres:
+    ports:
+      - "5432:5432"
