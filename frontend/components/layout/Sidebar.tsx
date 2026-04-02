@@ -207,6 +207,52 @@ const Sidebar = () => {
       <aside className="w-64 bg-gray-900 border-r border-gray-800 fixed left-0 top-14 bottom-0 overflow-y-auto z-30 hidden lg:block">
         <SidebarContent />
       </aside>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[300] p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Create Workspace</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1.5">Workspace Name <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={newWS.name}
+                  onChange={(e) => setNewWS({ ...newWS, name: e.target.value })}
+                  placeholder="e.g. My Team"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1.5">Description</label>
+                <textarea
+                  value={newWS.description}
+                  onChange={(e) => setNewWS({ ...newWS, description: e.target.value })}
+                  placeholder="What is this workspace for?"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none text-gray-900 bg-white"
+                  rows={3}
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={handleCreate}
+                  disabled={!newWS.name.trim() || creating}
+                  className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 font-medium text-sm"
+                >
+                  {creating ? "Creating..." : "Create Workspace"}
+                </button>
+                <button
+                  onClick={() => { setShowModal(false); setNewWS({ name: "", description: "" }); }}
+                  className="flex-1 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
