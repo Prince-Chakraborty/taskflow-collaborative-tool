@@ -7,9 +7,10 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-blue?style=flat-square&logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?style=flat-square&logo=docker)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-orange?style=flat-square&logo=githubactions)
+![Build](https://github.com/Prince-Chakraborty/taskflow-collaborative-tool/actions/workflows/ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-> A production-grade, real-time collaborative project management tool offering near-instant task synchronization, live presence indicators, version-based conflict detection, and optimistic drag-and-drop for remote teams — engineered to Jira/Trello standards.
+> A production-grade, real-time collaborative management tool offering near-instant task synchronization, live presence indicators, version-based conflict detection, and optimistic drag-and-drop for remote teams — engineered to Jira/Trello standards.
 
 ---
 
@@ -112,6 +113,7 @@ Implemented **Helmet.js, XSS protection, and express-rate-limiter** (100 req/15m
 - **Due date tracking** — overdue detection with warning banners
 - **Dark/Light mode** — system-aware theme switching
 - Settings — profile update, password change, notification preferences
+- Forgot password flow
 
 ---
 
@@ -234,7 +236,10 @@ taskflow/
 │       ├── socket/            # Socket.io room event handlers
 │       ├── config/            # DB config, schema, 7 indexes
 │       └── utils/             # Winston logger
-├── .github/workflows/         # CI/CD — test + lint pipeline
+├── .github/
+│   ├── workflows/             # CI/CD — test + lint pipeline
+│   ├── ISSUE_TEMPLATE/        # Bug report + feature request templates
+│   └── PULL_REQUEST_TEMPLATE.md
 ├── docker-compose.yml         # Production container setup
 └── docker-compose.dev.yml     # Development DB port override
 ```
