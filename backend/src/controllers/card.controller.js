@@ -394,7 +394,8 @@ const deleteChecklist = async (req, res, next) => {
 // @access  Private
 const searchCards = async (req, res, next) => {
   try {
-    const { q, boardId, priority, assignedTo } = req.query;
+    const { q, boardId, priority, assignedTo, page = 1, limit = 20 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let queryStr = `
       SELECT c.*, u.name as assigned_to_name, l.name as list_name
@@ -430,7 +431,7 @@ const searchCards = async (req, res, next) => {
       paramCount++;
     }
 
-    queryStr += ' ORDER BY c.created_at DESC LIMIT 20';
+    queryStr += ` ORDER BY c.created_at DESC LIMIT ${parseInt(limit)} OFFSET ${offset}`;
 
     const result = await query(queryStr, params);
 
