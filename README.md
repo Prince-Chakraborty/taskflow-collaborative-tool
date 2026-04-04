@@ -1,4 +1,4 @@
-# TaskFlow — Real-Time Collaborative Project Management Tool
+# TaskFlow — Real-Time Collaborative Management Tool
 
 ![Live Demo](https://img.shields.io/badge/Live%20Demo-Online-brightgreen?style=flat-square&logo=vercel)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
