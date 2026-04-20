@@ -45,8 +45,12 @@ const CardSubtasks = ({ cardId }: CardSubtasksProps) => {
       setNewTitle('');
       setIsAdding(false);
       toast.success('Subtask added');
-    } catch (err) {
-      toast.error('Failed to add subtask');
+    } catch (err: any) {
+      if (err?.code === 'ECONNABORTED' || !err?.response) {
+        toast.error('Server is waking up, please try again in a moment');
+      } else {
+        toast.error(err?.response?.data?.message || 'Failed to add subtask');
+      }
     } finally {
       setIsLoading(false);
     }
