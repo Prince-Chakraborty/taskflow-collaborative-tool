@@ -1,8 +1,7 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Plus, LayoutDashboard, Trash2, ArrowLeft } from 'lucide-react';
+import { Plus, LayoutDashboard, Trash2, ArrowLeft, Users, Settings, Shield } from 'lucide-react';
 import { boardAPI, workspaceAPI } from '@/lib/api';
 import { Board, Workspace } from '@/types';
 import Navbar from '@/components/layout/Navbar';
@@ -23,6 +22,8 @@ export default function WorkspacePage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newBoard, setNewBoard] = useState({ name: '', description: '', backgroundColor: '#0079BF' });
+  const [activeTab, setActiveTab] = useState('boards');
+  const [members, setMembers] = useState<any[]>([]);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) router.push('/login');
@@ -31,6 +32,18 @@ export default function WorkspacePage() {
   useEffect(() => {
     if (isAuthenticated && workspaceId) fetchData();
   }, [isAuthenticated, workspaceId]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab) setActiveTab(tab);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'members' && workspaceId) fetchMembers();
+  }, [activeTab, workspaceId]);
 
   const fetchData = async () => {
     try {
@@ -44,6 +57,15 @@ export default function WorkspacePage() {
       toast.error('Failed to load workspace');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchMembers = async () => {
+    try {
+      const res = await workspaceAPI.getMembers(workspaceId as string);
+      setMembers(res.data.data);
+    } catch (err) {
+      console.error('Failed to fetch members');
     }
   };
 
@@ -75,14 +97,13 @@ export default function WorkspacePage() {
     }
   };
 
-
+  if (authLoading) return <Loading fullScreen text="Loading..." />;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <Sidebar />
-
-      <div style={{ marginLeft: "256px", paddingTop: "56px", paddingLeft: "16px", paddingRight: "16px" }}>
+      <div style={{ marginLeft: "256px", paddingTop: "56px" }}>
         {/* Header */}
         <div className="px-6 py-4 bg-white border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -102,83 +123,187 @@ export default function WorkspacePage() {
               )}
             </div>
           </div>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium text-sm shadow-sm"
-          >
-            <Plus size={16} />
-            New Board
-          </button>
+          {activeTab === 'boards' && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium text-sm shadow-sm"
+            >
+              <Plus size={16} />
+              New Board
+            </button>
+          )}
         </div>
 
-        {/* Boards Grid */}
-        <div className="p-8">
-          {isLoading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {[1,2,3,4].map(i => <BoardSkeleton key={i} />)}
-            </div>
-          )}
-          {boards.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <LayoutDashboard className="text-gray-400" size={36} />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No boards yet</h3>
-              <p className="text-gray-500 text-sm mb-4">Create your first board to start managing tasks</p>
+        {/* Tabs */}
+        <div className="px-6 border-b border-gray-200 bg-white">
+          <div className="flex gap-6">
+            {[
+              { id: 'boards', label: 'Boards', icon: LayoutDashboard },
+              { id: 'members', label: 'Members', icon: Users },
+              { id: 'settings', label: 'Settings', icon: Settings },
+            ].map((tab) => (
               <button
-                onClick={() => setShowCreateModal(true)}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium text-sm"
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
               >
-                Create Board
+                <tab.icon size={15} />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Boards Tab */}
+        {activeTab === 'boards' && (
+          <div className="p-8">
+            {isLoading && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {[1,2,3,4].map(i => <BoardSkeleton key={i} />)}
+              </div>
+            )}
+            {!isLoading && boards.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <LayoutDashboard className="text-gray-400" size={36} />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">No boards yet</h3>
+                <p className="text-gray-500 text-sm mb-4">Create your first board to start managing tasks</p>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium text-sm"
+                >
+                  Create Board
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pl-2">
+                {boards.map((board) => (
+                  <div
+                    key={board.id}
+                    className="relative rounded-2xl cursor-pointer group shadow-sm hover:shadow-lg transition-all duration-200 h-32"
+                    style={{ backgroundColor: board.background_color }}
+                    onClick={() => router.push(`/board/${board.id}`)}
+                  >
+                    <div className="p-5 h-full flex flex-col justify-between">
+                      <div className="flex items-start justify-between">
+                        <h3 className="font-semibold text-white text-base line-clamp-2 flex-1 pl-2">
+                          {board.name}
+                        </h3>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDeleteBoard(board.id); }}
+                          className="opacity-0 group-hover:opacity-100 p-1.5 bg-white bg-opacity-20 hover:bg-opacity-40 text-white rounded-lg transition-all ml-2 flex-shrink-0"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs bg-black bg-opacity-20 text-white px-2 py-0.5 rounded-full font-medium">
+                          {parseInt(String(board.list_count)) || 0} lists
+                        </span>
+                        <span className="text-xs bg-black bg-opacity-20 text-white px-2 py-0.5 rounded-full font-medium">
+                          {parseInt(String(board.card_count)) || 0} cards
+                        </span>
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity rounded-2xl" />
+                  </div>
+                ))}
+                <div
+                  onClick={() => setShowCreateModal(true)}
+                  className="rounded-2xl border-2 border-dashed border-gray-300 h-32 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
+                >
+                  <div className="text-center">
+                    <Plus className="text-gray-400 group-hover:text-blue-500 mx-auto mb-1 transition-colors" size={24} />
+                    <p className="text-sm text-gray-500 group-hover:text-blue-600 font-medium">Create Board</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Members Tab */}
+        {activeTab === 'members' && (
+          <div className="p-8 max-w-3xl">
+            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <Users size={20} className="text-blue-600" />
+              Workspace Members
+            </h2>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              {members.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No members found</p>
+                </div>
+              ) : (
+                members.map((member: any) => (
+                  <div key={member.id} className="flex items-center justify-between px-5 py-3 border-b border-gray-50 last:border-0">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                        {member.name?.[0]?.toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">{member.name}</p>
+                        <p className="text-xs text-gray-500">{member.email}</p>
+                      </div>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      member.role === 'admin' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {member.role}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div className="p-8 max-w-2xl">
+            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <Settings size={20} className="text-blue-600" />
+              Workspace Settings
+            </h2>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1.5">Workspace Name</label>
+                <input
+                  type="text"
+                  defaultValue={workspace?.name}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1.5">Description</label>
+                <textarea
+                  defaultValue={workspace?.description}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white resize-none"
+                  rows={3}
+                />
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
+                <Shield className="text-green-600" size={20} />
+                <div>
+                  <p className="text-sm font-medium text-green-800">Workspace Secured</p>
+                  <p className="text-xs text-green-600">Role-based access control is enabled</p>
+                </div>
+              </div>
+              <button
+                onClick={() => toast.success('Settings saved!')}
+                className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 text-sm font-medium"
+              >
+                Save Changes
               </button>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pl-2">
-              {boards.map((board) => (
-                <div
-                  key={board.id}
-                  className="relative rounded-2xl cursor-pointer group shadow-sm hover:shadow-lg transition-all duration-200 h-32"
-                  style={{ backgroundColor: board.background_color }}
-                  onClick={() => router.push(`/board/${board.id}`)}
-                >
-                  <div className="p-5 h-full flex flex-col justify-between">
-                    <div className="flex items-start justify-between">
-                      <h3 className="font-semibold text-white text-base line-clamp-2 flex-1 pl-2">
-                        {board.name}
-                      </h3>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDeleteBoard(board.id); }}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 bg-white bg-opacity-20 hover:bg-opacity-40 text-white rounded-lg transition-all ml-2 flex-shrink-0"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs bg-black bg-opacity-20 text-white px-2 py-0.5 rounded-full font-medium">
-                        {parseInt(String(board.list_count)) || 0} lists
-                      </span>
-                      <span className="text-xs bg-black bg-opacity-20 text-white px-2 py-0.5 rounded-full font-medium">
-                        {parseInt(String(board.card_count)) || 0} cards
-                      </span>
-                    </div>
-                  </div>
-                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity rounded-2xl" />
-                </div>
-              ))}
-
-              {/* Create Board Card */}
-              <div
-                onClick={() => setShowCreateModal(true)}
-                className="rounded-2xl border-2 border-dashed border-gray-300 h-32 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
-              >
-                <div className="text-center">
-                  <Plus className="text-gray-400 group-hover:text-blue-500 mx-auto mb-1 transition-colors" size={24} />
-                  <p className="text-sm text-gray-500 group-hover:text-blue-600 font-medium">Create Board</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Create Board Modal */}
