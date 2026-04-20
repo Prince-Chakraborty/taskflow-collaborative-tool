@@ -128,3 +128,17 @@ CREATE INDEX IF NOT EXISTS idx_comments_card_id ON comments(card_id);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_board_id ON activity_logs(board_id);
 CREATE INDEX IF NOT EXISTS idx_workspace_members_workspace_id ON workspace_members(workspace_id);
 CREATE INDEX IF NOT EXISTS idx_workspace_members_user_id ON workspace_members(user_id);
+
+-- Subtasks table
+CREATE TABLE IF NOT EXISTS subtasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  card_id UUID NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+  title VARCHAR(500) NOT NULL,
+  is_completed BOOLEAN DEFAULT false,
+  position INTEGER DEFAULT 0,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_subtasks_card_id ON subtasks(card_id);
