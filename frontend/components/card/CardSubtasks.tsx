@@ -153,7 +153,7 @@ const CardSubtasks = ({ cardId }: CardSubtasksProps) => {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Subtask title..."
-                className= text-gray-900 bg-white"flex-1 px-2 py-1.5 text-sm border border-blue-400 rounded-lg outline-none focus:ring-2 focus:ring-blue-300"
+                className="flex-1 px-2 py-1.5 text-sm border border-blue-400 rounded-lg outline-none focus:ring-2 focus:ring-blue-300 text-gray-900 bg-white"
                 autoFocus
               />
               <button
