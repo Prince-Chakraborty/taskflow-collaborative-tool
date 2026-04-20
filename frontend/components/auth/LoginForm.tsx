@@ -10,6 +10,7 @@ import useAuth from '@/hooks/useAuth';
 const LoginForm = () => {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState('Signing in...');
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +29,9 @@ const LoginForm = () => {
     e.preventDefault();
     if (!validate()) return;
     setIsLoading(true);
+      setLoadingMsg('Signing in...');
+      setTimeout(() => setLoadingMsg('Connecting to server...'), 3000);
+      setTimeout(() => setLoadingMsg('Almost there...'), 8000);
     try {
       await login(formData.email, formData.password);
     } catch (err: any) {
@@ -102,7 +106,7 @@ const LoginForm = () => {
               type="submit"
               className="w-full"
               size="lg"
-              isLoading={isLoading}
+              isLoading={isLoading} loadingText={loadingMsg}
             >
               Sign In
             </Button>

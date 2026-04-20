@@ -10,6 +10,7 @@ import useAuth from '@/hooks/useAuth';
 const SignupForm = () => {
   const { signup } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState('Creating account...');
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirmPassword?: string }>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +33,9 @@ const SignupForm = () => {
     e.preventDefault();
     if (!validate()) return;
     setIsLoading(true);
+    setLoadingMsg('Creating account...');
+    const t1 = setTimeout(() => setLoadingMsg('Connecting to server...'), 3000);
+    const t2 = setTimeout(() => setLoadingMsg('Almost there...'), 8000);
     try {
       await signup(formData.name, formData.email, formData.password);
     } catch (err: any) {
@@ -39,6 +43,7 @@ const SignupForm = () => {
       setErrors({ email: message });
     } finally {
       setIsLoading(false);
+      setLoadingMsg('Creating account...');
     }
   };
 
@@ -124,7 +129,7 @@ const SignupForm = () => {
               type="submit"
               className="w-full"
               size="lg"
-              isLoading={isLoading}
+              isLoading={isLoading} loadingText={loadingMsg}
             >
               Create Account
             </Button>
