@@ -25,6 +25,18 @@
 
 ---
 
+## 📸 Screenshots
+
+| Login | Dashboard |
+|-------|-----------|
+| ![Login](./assets/screenshots/login.png) | ![Dashboard](./assets/screenshots/dashboard.png) |
+
+| Board | Card Modal |
+|-------|-----------|
+| ![Board](./assets/screenshots/board.png) | ![Card Modal](./assets/screenshots/card-modal.png) |
+
+---
+
 ## 🎯 The Problem & Solution
 
 **Problem:** Traditional project management tools lack fluid real-time collaboration — teams are forced to manually refresh to see updates, leading to slow workflows, missed changes, data conflicts, and poor team visibility.
