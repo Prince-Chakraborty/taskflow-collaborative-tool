@@ -38,3 +38,4 @@ coverage/
 next-env.d.ts
 .vercel
 .env*.local
+.env
