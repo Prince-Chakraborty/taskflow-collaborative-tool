@@ -35,6 +35,8 @@ const LoginForm = () => {
     try {
       await login(formData.email, formData.password);
     } catch (err: any) {
+      const message = err?.response?.data?.message || 'Invalid email or password';
+      setErrors({ email: message });
     } finally {
       setIsLoading(false);
     }
