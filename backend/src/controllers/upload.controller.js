@@ -41,7 +41,7 @@ const uploadCardAttachment = async (req, res, next) => {
     const { cardId } = req.params;
     const userId = req.user.id;
 
-    if (!req.file) {
+    if (!req.file || req.file.size === 0) {
       return next(new AppError('No file uploaded', 400));
     }
 
@@ -88,7 +88,7 @@ const uploadAvatar = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
-    if (!req.file) {
+    if (!req.file || req.file.size === 0) {
       return next(new AppError('No file uploaded', 400));
     }
 
